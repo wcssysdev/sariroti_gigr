@@ -17,9 +17,7 @@ class GoodMovementController extends Controller
             }
 
             $data = std_get([
-                "select" => ["LG_MATERIAL_CODE","LG_MATERIAL_MVT_TYPE","LG_MATERIAL_UOM","LG_MATERIAL_QTY","TR_GR_DETAIL.*","LG_MATERIAL_CREATED_TIMESTAMP","TR_GR_HEADER.TR_GR_HEADER_SAP_DOC",
-//                    "MA_SLOC.MA_SLOC_DESC"
-                    ],
+                "select" => ["LG_MATERIAL_CODE","LG_MATERIAL_MVT_TYPE","LG_MATERIAL_UOM","LG_MATERIAL_QTY","TR_GR_DETAIL.*","LG_MATERIAL_CREATED_TIMESTAMP","TR_GR_HEADER.TR_GR_HEADER_SAP_DOC"],
                 "table_name" => "LG_MATERIAL",
                 "join" => [
                     [
@@ -35,14 +33,7 @@ class GoodMovementController extends Controller
                         "on1" => "TR_GR_HEADER.TR_GR_HEADER_ID",
                         "operator" => "=",
                         "on2" => "TR_GR_DETAIL.TR_GR_DETAIL_HEADER_ID",
-                    ],
-//                    [
-//                        "join_type" => "left",
-//                        "table_name" => "MA_SLOC",
-//                        "on1" => "MA_SLOC.MA_SLOC_CODE",
-//                        "operator" => "=",
-//                        "on2" => "TR_GR_DETAIL.TR_GR_DETAIL_SLOC",
-//                    ]
+                    ]
                 ],
                 "where" => [
                     [
@@ -50,28 +41,24 @@ class GoodMovementController extends Controller
                         "operator" => "=",
                         "value" => $request->plant_code
                     ],
-//                    [
-//                        "field_name" => "LG_MATERIAL_POSTING_DATE",
-//                        "operator" => ">=",
-//                        "value" => convert_to_y_m_d($request->start_date)
-//                    ],
-//                    [
-//                        "field_name" => "LG_MATERIAL_POSTING_DATE",
-//                        "operator" => "<=",
-//                        "value" => convert_to_y_m_d($request->end_date)
-//                    ]
+                    [
+                        "field_name" => "LG_MATERIAL_POSTING_DATE",
+                        "operator" => ">=",
+                        "value" => convert_to_y_m_d($request->start_date)
+                    ],
+                    [
+                        "field_name" => "LG_MATERIAL_POSTING_DATE",
+                        "operator" => "<=",
+                        "value" => convert_to_y_m_d($request->end_date)
+                    ]
                 ],
                 "order_by" => [
-//                    [
-//                        "field" => "MA_SLOC_DESC",
-//                        "type" => "ASC",
-//                    ],
                     [
                         "field" => "LG_MATERIAL_CODE",
                         "type" => "ASC",
                     ],
                     [
-                        "field" => "LG_MATERIAL_POSTING_DATE",
+                        "field" => "TR_GR_DETAIL_EXP_DATE",
                         "type" => "ASC",
                     ],
                 ]

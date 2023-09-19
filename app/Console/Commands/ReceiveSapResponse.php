@@ -296,15 +296,15 @@ class ReceiveSapResponse extends Command
                                 ]);
 
                             }
-//                            std_update([
-//                                "table_name" => "TR_GR_HEADER",
-//                                "where" => [
-//                                    "TR_GR_HEADER_ID" => $gr_header["TR_GR_HEADER_ID"]
-//                                ],
-//                                "data" => [
-//                                    "TR_GR_HEADER_IS_CANCELLED" => true
-//                                ]
-//                            ]);
+                            std_update([
+                                "table_name" => "TR_GR_HEADER",
+                                "where" => [
+                                    "TR_GR_HEADER_ID" => $gr_header["TR_GR_HEADER_ID"]
+                                ],
+                                "data" => [
+                                    "TR_GR_HEADER_IS_CANCELLED" => true
+                                ]
+                            ]);
 
 
                         }
@@ -458,15 +458,15 @@ class ReceiveSapResponse extends Command
                                 }
                             }
 
-//                            std_update([
-//                                "table_name" => "TR_TP_HEADER",
-//                                "where" => [
-//                                    "TR_TP_HEADER_ID" => $tp_header["TR_TP_HEADER_ID"]
-//                                ],
-//                                "data" => [
-//                                    "TR_TP_HEADER_IS_CANCELLED" => true
-//                                ]
-//                            ]);
+                            std_update([
+                                "table_name" => "TR_TP_HEADER",
+                                "where" => [
+                                    "TR_TP_HEADER_ID" => $tp_header["TR_TP_HEADER_ID"]
+                                ],
+                                "data" => [
+                                    "TR_TP_HEADER_IS_CANCELLED" => true
+                                ]
+                            ]);
                         }
                         elseif ($cancellation_header["TR_CANCELLATION_MVT_SAP_CODE"] == "Y22") {
                             //TP Doc

@@ -22,11 +22,11 @@ class StockController extends Controller
                 ]
             ],
             "where" => [
-//                [
-//                    "field_name" => "LG_MATERIAL_PLANT_CODE",
-//                    "operator" => "=",
-//                    "value" => $plant_code
-//                ],
+                [
+                    "field_name" => "LG_MATERIAL_PLANT_CODE",
+                    "operator" => "=",
+                    "value" => $plant_code
+                ],
                 [
                     "field_name" => "LG_MATERIAL_POSTING_DATE",
                     "operator" => "<",

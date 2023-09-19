@@ -372,7 +372,7 @@ function base_assets_url($service_type, $image_name)
 function ldap_login($email = null, $password = null)
 {
     if ($email != null && $password != null) {
-        $server = gethostbyname("ssodev.sariroti.com");
+        $server = gethostbyname("sso.sariroti.com");
         $ds = ldap_connect($server, 389);
         if (false === $ds) {
             return 500;

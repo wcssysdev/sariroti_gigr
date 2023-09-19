@@ -128,7 +128,7 @@ Route::group(['middleware' => 'check_user_session:2,3,5,6'], function () {
 });
 
 
-Route::group(['middleware' => 'check_user_session:2,5,6'], function () {
+Route::group(['middleware' => 'check_user_session:2,6'], function () {
     Route::get('purchase_order/good_issue/add', 'PurchaseOrder\GoodIssue\AddController@index')->name('transaction_gi_sto_add');
     Route::get('/purchase_order/good_issue/add', 'PurchaseOrder\GoodIssue\AddController@index')->name('purchase_order_good_issue_add');
     Route::get('/purchase_order/good_issue/add/get_materials', 'PurchaseOrder\GoodIssue\AddController@get_materials')->name('purchase_order_good_issue_add_get_materials');

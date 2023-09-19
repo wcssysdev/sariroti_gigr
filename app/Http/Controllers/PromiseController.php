@@ -665,7 +665,7 @@ class PromiseController extends Controller
                 Mail::send('mail.gr_notification', $data, function($message) use ($mail_to) {
                     $message->to($mail_to)->subject
                         ('Notifikasi Material Yang Sudah Mau Mencapai Masa Kadaluarsa');
-                    $message->from('nikolas.paundralingga@sarirotidev.comdev','GI GR Scanner System');
+                    $message->from('nikolas.paundralingga@sariroti.com','GI GR Scanner System');
                 });
                 echo "HTML Email Sent. Check your inbox.";
             }

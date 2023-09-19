@@ -114,7 +114,7 @@ class ExpiredGRReminder extends Command
                 Mail::send('mail.gr_notification', $data, function($message) use ($mail_to) {
                     $message->to($mail_to)->subject
                         ('Notifikasi Material Yang Sudah Mau Mencapai Masa Kadaluarsa');
-                    $message->from('nikolas.paundralingga@sarirotidev.com','GI GR Scanner System');
+                    $message->from('nikolas.paundralingga@sariroti.com','GI GR Scanner System');
                 });
             }
         }

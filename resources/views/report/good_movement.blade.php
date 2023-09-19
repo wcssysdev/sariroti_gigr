@@ -12,7 +12,7 @@
 $(function () {
     $('#report_table').rowspanizer({
         vertical_align: 'middle',
-        columns: [0,1,2,3]
+        columns: [0,1,2]
     });
 });
 </script>
@@ -78,7 +78,6 @@ $(function () {
     <div class="card-body" id="printable">
         <table border="1" style="width:100%;" id="report_table">
             <tr>
-                <td style="text-align:center; padding: 5px;width:10%;"><b>Storage Location</b></td>
                 <td style="text-align:center; padding: 5px;width:10%;"><b>Material Code</b></td>
                 <td style="text-align:center; padding: 5px;width:10%;"><b>Material Name</b></td>
                 <td style="text-align:center; padding: 5px;width:10%;"><b>Expired Date</b></td>
@@ -92,8 +91,6 @@ $(function () {
             </tr>
             @foreach ($data as $row)
             <tr>
-                <!--<td style="text-align:center; padding: 5px;">{{ $row["MA_SLOC_DESC"] }}</td>-->
-                <td style="text-align:center; padding: 5px;">-</td>
                 <td style="text-align:center; padding: 5px;">{{ $row["LG_MATERIAL_CODE"] }}</td>
                 <td style="text-align:center; padding: 5px;">{{ $row["TR_GR_DETAIL_MATERIAL_NAME"] }}</td>
                 <td style="text-align:center; padding: 5px;">{{ convert_to_web_dmy($row["TR_GR_DETAIL_EXP_DATE"]) }}</td>

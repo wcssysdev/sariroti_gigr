@@ -16,31 +16,22 @@ class AddController extends Controller
 
     public function get_doc_number(Request $request)
     {
-        $year_doc = $request->doc_year;
         if ($request->doc_type == "GR") {
-            $where_list[0] =                     [
-                        "field_name" => "TR_GR_HEADER_SAP_DOC",
-                        "operator" => "!=",
-                        "value" => null
-                    ];
-            if(!empty($year_doc)){
-            $where_list[1] =[
-                        "field_name" => "TR_GR_HEADER_SAP_YEAR",
-                        "operator" => "=",
-                        "value" => "$year_doc"                
-            ];
-            }
             return std_get([
                 "select" => ["TR_GR_HEADER_SAP_DOC as id", "TR_GR_HEADER_SAP_DOC as text"],
                 "table_name" => "TR_GR_HEADER",
-                "where" => 
+                "where" => [
                     // [
                     //     "field_name" => "TR_GR_HEADER_STATUS",
                     //     "operator" => "=",
                     //     "value" => "SUCCESS"
                     // ]
-                    $where_list
-                ,
+                    [
+                        "field_name" => "TR_GR_HEADER_SAP_DOC",
+                        "operator" => "!=",
+                        "value" => null
+                    ]
+                ],
                 "first_row" => false
             ]);
         }
