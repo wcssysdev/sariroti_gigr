@@ -35,6 +35,10 @@
                                 <option value="TP">TP</option>
                             </select>
                         </div>
+                        <div class="col-lg-1">
+                            <label>Year:</label>
+                            <input type="number" id="doc_year" class="form-control" name="doc_year" autocomplete="off" placeholder="{{ date('Y') }}" value="{{ date('Y') }}" min="{{(intval(date('Y')) - 20)}}">
+                        </div>
                         <div class="col-lg-3">
                             <label>Document Number:</label>
                             <select class="form-control" id="doc_number_select2" name="doc_number" required>

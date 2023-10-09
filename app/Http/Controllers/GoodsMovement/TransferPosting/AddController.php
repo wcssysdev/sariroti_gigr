@@ -943,10 +943,11 @@ class AddController extends Controller
                         ]
                     ]);
 
+                    $postingdate = empty($request->TR_TP_HEADER_PSTG_DATE)? NULL : convert_to_y_m_d($request->TR_TP_HEADER_PSTG_DATE);
                     insert_material_log([
                         "material_code" => $gr_detail["TR_GR_DETAIL_MATERIAL_CODE"],
                         "plant_code" => session("plant"),
-                        "posting_date" => convert_to_y_m_d($request->TR_TP_HEADER_PSTG_DATE),
+                        "posting_date" => $postingdate,
                         "movement_type" => $request->TR_TP_HEADER_MVT_CODE,
                         "gr_detail_id" => $row["TR_GR_DETAIL_LOCK_GR_DETAIL_ID"],
                         "base_qty" => $row["TR_GR_DETAIL_LOCK_BOOKED_QTY"],

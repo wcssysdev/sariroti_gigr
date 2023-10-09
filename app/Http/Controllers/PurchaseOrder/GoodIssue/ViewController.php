@@ -20,11 +20,11 @@ class ViewController extends Controller
                 "operator" => "!=",
                 "value" => "E"
             ],
-            [
-                "field_name" => "TR_PO_HEADER_SUP_PLANT",
-                "operator" => "=",
-                "value" => session("plant")
-            ],
+//            [
+//                "field_name" => "TR_PO_HEADER_SUP_PLANT",
+//                "operator" => "=",
+//                "value" => session("plant")
+//            ],
             [
                 "field_name" => "TR_PO_HEADER_IS_DELETED",
                 "operator" => "=",
@@ -66,15 +66,15 @@ class ViewController extends Controller
             ]);
         }
 
-        if (isset($request->plant_code) && $request->plant_code != "") {
-            $conditions = array_merge($conditions, [
-                [
-                    "field_name" => "TR_PO_HEADER_SUP_PLANT",
-                    "operator" => "=",
-                    "value" => $request->plant_code
-                ]
-            ]);
-        }
+//        if (isset($request->plant_code) && $request->plant_code != "") {
+//            $conditions = array_merge($conditions, [
+//                [
+//                    "field_name" => "TR_PO_HEADER_SUP_PLANT",
+//                    "operator" => "=",
+//                    "value" => $request->plant_code
+//                ]
+//            ]);
+//        }
 
         if (isset($request->vendor_code) && $request->vendor_code != "") {
             $conditions = array_merge($conditions, [
@@ -127,11 +127,11 @@ class ViewController extends Controller
                 "operator" => "!=",
                 "value" => "E"
             ],
-            [
-                "field_name" => "TR_PO_DETAIL_PLANT_RCV",
-                "operator" => "=",
-                "value" => session("plant")
-            ],
+//            [
+//                "field_name" => "TR_PO_DETAIL_PLANT_RCV",
+//                "operator" => "=",
+//                "value" => session("plant")
+//            ],
             [
                 "field_name" => "TR_PO_HEADER_IS_DELETED",
                 "operator" => "=",
@@ -165,15 +165,15 @@ class ViewController extends Controller
             ]);
         }
 
-        if (isset($request->plant_code) && $request->plant_code != "") {
-            $conditions = array_merge($conditions, [
-                [
-                    "field_name" => "TR_PO_HEADER_SUP_PLANT",
-                    "operator" => "=",
-                    "value" => $request->plant_code
-                ]
-            ]);
-        }
+//        if (isset($request->plant_code) && $request->plant_code != "") {
+//            $conditions = array_merge($conditions, [
+//                [
+//                    "field_name" => "TR_PO_HEADER_SUP_PLANT",
+//                    "operator" => "=",
+//                    "value" => $request->plant_code
+//                ]
+//            ]);
+//        }
         if (isset($request->vendor_code) && $request->vendor_code != "") {
             $conditions = array_merge($conditions, [
                 [

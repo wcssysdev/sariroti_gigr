@@ -16,22 +16,31 @@ class AddController extends Controller
 
     public function get_doc_number(Request $request)
     {
+        $year_doc = $request->doc_year;
         if ($request->doc_type == "GR") {
+            $where_list[0] =                     [
+                        "field_name" => "TR_GR_HEADER_SAP_DOC",
+                        "operator" => "!=",
+                        "value" => null
+                    ];
+            if(!empty($year_doc)){
+            $where_list[1] =[
+                        "field_name" => "TR_GR_HEADER_SAP_YEAR",
+                        "operator" => "=",
+                        "value" => "$year_doc"                
+            ];
+            }
             return std_get([
                 "select" => ["TR_GR_HEADER_SAP_DOC as id", "TR_GR_HEADER_SAP_DOC as text"],
                 "table_name" => "TR_GR_HEADER",
-                "where" => [
+                "where" => 
                     // [
                     //     "field_name" => "TR_GR_HEADER_STATUS",
                     //     "operator" => "=",
                     //     "value" => "SUCCESS"
                     // ]
-                    [
-                        "field_name" => "TR_GR_HEADER_SAP_DOC",
-                        "operator" => "!=",
-                        "value" => null
-                    ]
-                ],
+                    $where_list
+                ,
                 "first_row" => false
             ]);
         }
@@ -179,6 +188,8 @@ class AddController extends Controller
 
     public function save(Request $request)
     {
+//        $this->db->trans_begin();
+        
         $validation_res = $this->save_validate_input($request);
         if ($validation_res !== true) {
             return response()->json([
@@ -251,6 +262,7 @@ class AddController extends Controller
                 "first_row" => true
             ]);
         }
+        
 
         if ($doc_header["movement"] == "101") {
             $doc_header["movement"] = "102";
@@ -358,11 +370,11 @@ class AddController extends Controller
             ]);
         }
         if ($detail_insert_data != NULL) {
-            std_insert([
+             std_insert([
                 "table_name" => "TR_CANCELATION_MVT_DETAIL",
                 "data" => $detail_insert_data
             ]);
-        }
+}        
         
         if ($request->type == "GR") {
             std_update([

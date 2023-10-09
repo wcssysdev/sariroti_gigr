@@ -8,10 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
 
-class AddController extends Controller
-{
-    public function index(Request $request)
-    {
+class AddController extends Controller {
+
+    public function index(Request $request) {
         $data = std_get([
             "select" => ["*"],
             "table_name" => "TR_PO_HEADER",
@@ -24,7 +23,7 @@ class AddController extends Controller
             ],
             "first_row" => true
         ]);
-        
+
         $detail_data = std_get([
             "select" => ["*"],
             "table_name" => "TR_PO_DETAIL",
@@ -40,8 +39,7 @@ class AddController extends Controller
 
         if (session("gr_cart") == null) {
             $gr_cart = [];
-        }
-        else{
+        } else {
             $gr_cart = session("gr_cart");
         }
 
@@ -58,10 +56,9 @@ class AddController extends Controller
         ]);
     }
 
-    public function get_materials(Request $request)
-    {
+    public function get_materials(Request $request) {
         $materials = std_get([
-            "select" => ["TR_PO_DETAIL_ID","TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME"],
+            "select" => ["TR_PO_DETAIL_ID", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME"],
             "table_name" => "TR_PO_DETAIL",
             "where" => [
                 [
@@ -75,28 +72,26 @@ class AddController extends Controller
             foreach ($materials as $row) {
                 $materials_adj[] = [
                     "id" => $row["TR_PO_DETAIL_ID"],
-                    "text" => $row["TR_PO_DETAIL_MATERIAL_CODE"]." - ".$row["TR_PO_DETAIL_MATERIAL_NAME"]
+                    "text" => $row["TR_PO_DETAIL_MATERIAL_CODE"] . " - " . $row["TR_PO_DETAIL_MATERIAL_NAME"]
                 ];
             }
             return response()->json([
-                "status" => "OK",
-                "data" => $materials_adj,
-                "sloc_data" => get_sloc(session("plant"))
-            ],200);
-        }
-        else{
+                        "status" => "OK",
+                        "data" => $materials_adj,
+                        "sloc_data" => get_sloc(session("plant"))
+                            ], 200);
+        } else {
             return response()->json([
-                "status" => "OK",
-                "data" => [],
-                "sloc_data" => get_sloc(session("plant"))
-            ],200);
+                        "status" => "OK",
+                        "data" => [],
+                        "sloc_data" => get_sloc(session("plant"))
+                            ], 200);
         }
     }
 
-    public function get_material_status(Request $request)
-    {
+    public function get_material_status(Request $request) {
         $po_detail = std_get([
-            "select" => ["TR_PO_DETAIL_SLOC","TR_PO_DETAIL_MATERIAL_CODE","TR_PO_DETAIL_PLANT_RCV","TR_PO_DETAIL_QTY_ORDER","TR_PO_DETAIL_QTY_DELIV","TR_PO_DETAIL_UOM","TR_PO_DETAIL_PO_HEADER_NUMBER","TR_PO_DETAIL_MATERIAL_BATCH"],
+            "select" => ["TR_PO_DETAIL_SLOC", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_PLANT_RCV", "TR_PO_DETAIL_QTY_ORDER", "TR_PO_DETAIL_QTY_DELIV", "TR_PO_DETAIL_UOM", "TR_PO_DETAIL_PO_HEADER_NUMBER", "TR_PO_DETAIL_MATERIAL_BATCH"],
             "table_name" => "TR_PO_DETAIL",
             "where" => [
                 [
@@ -131,7 +126,7 @@ class AddController extends Controller
                     "operator" => "=",
                     "value" => $po_detail["TR_PO_DETAIL_MATERIAL_CODE"]
                 ],
-                 [
+                [
                     "field_name" => "TR_GR_HEADER_IS_CANCELLED",
                     "operator" => "!=",
                     "value" => true
@@ -139,12 +134,11 @@ class AddController extends Controller
             ]
         ]);
 
-        
-       /*f ($gr_data != NULL) {
-            foreach ($gr_data as $row) {
-                $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $row["TR_GR_DETAIL_QTY"];
-            }
-        }*/
+        /* f ($gr_data != NULL) {
+          foreach ($gr_data as $row) {
+          $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $row["TR_GR_DETAIL_QTY"];
+          }
+          } */
 
         $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $po_detail["TR_PO_DETAIL_QTY_DELIV"];
         $material = std_get([
@@ -167,31 +161,29 @@ class AddController extends Controller
 
         if ($gr_data == NULL) {
             $qty_left = $po_detail["TR_PO_DETAIL_QTY_ORDER"];
-        }
-        else{
+        } else {
             $qty_left = ($po_detail["TR_PO_DETAIL_QTY_ORDER"]);
         }
 
         return response()->json([
-            "status" => "OK",
-            "data" => [
-                "sloc" => $po_detail["TR_PO_DETAIL_SLOC"],
-                "batch" => $po_detail["TR_PO_DETAIL_MATERIAL_BATCH"],
-                "qty_left" => $qty_left." ".$po_detail["TR_PO_DETAIL_UOM"],
-                "batch_list" => $material
-            ]
-        ],200);
+                    "status" => "OK",
+                    "data" => [
+                        "sloc" => $po_detail["TR_PO_DETAIL_SLOC"],
+                        "batch" => $po_detail["TR_PO_DETAIL_MATERIAL_BATCH"],
+                        "qty_left" => $qty_left . " " . $po_detail["TR_PO_DETAIL_UOM"],
+                        "batch_list" => $material
+                    ]
+                        ], 200);
     }
 
-    public function save_material_validate_input($request)
-    {
-        $validate = Validator::make($request->all(),[
-            "po_detail_id" => "required|numeric",
-            "batch_sap" => "max:255",
-            "expired_date" => "required|max:255",
-            "qty" => "required|max:255",
-            "TR_GR_DETAIL_NOTES" => "max:65000",
-            "TR_GR_DETAIL_SLOC" => "required|max:255"
+    public function save_material_validate_input($request) {
+        $validate = Validator::make($request->all(), [
+                    "po_detail_id" => "required|numeric",
+                    "batch_sap" => "max:255",
+                    "expired_date" => "required|max:255",
+                    "qty" => "required|max:255",
+                    "TR_GR_DETAIL_NOTES" => "max:65000",
+                    "TR_GR_DETAIL_SLOC" => "required|max:255"
         ]);
 
         $attributeNames = [
@@ -204,24 +196,23 @@ class AddController extends Controller
         ];
 
         $validate->setAttributeNames($attributeNames);
-        if($validate->fails()){
+        if ($validate->fails()) {
             $errors = $validate->errors();
             return $errors->all();
         }
         return true;
     }
 
-    public function save_material(Request $request)
-    {
+    public function save_material(Request $request) {
         $validation_res = $this->save_material_validate_input($request);
         if ($validation_res !== true) {
             return response()->json([
-                'message' => $validation_res
-            ],400);
+                        'message' => $validation_res
+                            ], 400);
         }
 
         $po_detail = std_get([
-            "select" => ["TR_PO_DETAIL_SLOC","TR_PO_DETAIL_MATERIAL_CODE","TR_PO_DETAIL_MATERIAL_NAME","TR_PO_DETAIL_PO_HEADER_NUMBER","TR_PO_DETAIL_PLANT_RCV","TR_PO_DETAIL_QTY_ORDER","TR_PO_DETAIL_QTY_DELIV","TR_PO_DETAIL_UOM"],
+            "select" => ["TR_PO_DETAIL_SLOC", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME", "TR_PO_DETAIL_PO_HEADER_NUMBER", "TR_PO_DETAIL_PLANT_RCV", "TR_PO_DETAIL_QTY_ORDER", "TR_PO_DETAIL_QTY_DELIV", "TR_PO_DETAIL_UOM"],
             "table_name" => "TR_PO_DETAIL",
             "where" => [
                 [
@@ -264,24 +255,23 @@ class AddController extends Controller
             ]
         ]);
 
-        /*if ($gr_data != NULL) {
-            foreach ($gr_data as $row) {
-                $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $row["TR_GR_DETAIL_QTY"];
-            }
-        }*/
+        /* if ($gr_data != NULL) {
+          foreach ($gr_data as $row) {
+          $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $row["TR_GR_DETAIL_QTY"];
+          }
+          } */
         $po_detail["TR_PO_DETAIL_QTY_ORDER"] -= $po_detail["TR_PO_DETAIL_QTY_DELIV"];
         //var_dump($po_detail["TR_PO_DETAIL_QTY_ORDER"]);die;
         if ($request->qty > $po_detail["TR_PO_DETAIL_QTY_ORDER"]) {
             return redirect()->route("purchase_order_good_receipt_add", [
-                'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
-                'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
-                'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
-                'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
-                'header_note' => $request->TR_GR_HEADER_TXT,
-                'message' => "Qty input must be lower than Qty Left"
+                        'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
+                        'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
+                        'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
+                        'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
+                        'header_note' => $request->TR_GR_HEADER_TXT,
+                        'message' => "Qty input must be lower than Qty Left"
             ]);
-        }
-        else{
+        } else {
             if (session("gr_cart") != null) {
                 $gr_cart = session("gr_cart");
                 $gr_cart = array_merge($gr_cart, [
@@ -301,8 +291,7 @@ class AddController extends Controller
                 session([
                     "gr_cart" => $gr_cart
                 ]);
-            }
-            else{
+            } else {
                 session([
                     "gr_cart" => [
                         [
@@ -320,25 +309,24 @@ class AddController extends Controller
                     ]
                 ]);
             }
-            
+
             return redirect()->route("purchase_order_good_receipt_add", [
-                'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
-                'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
-                'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
-                'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
-                'header_note' => $request->TR_GR_HEADER_TXT
+                        'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
+                        'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
+                        'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
+                        'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
+                        'header_note' => $request->TR_GR_HEADER_TXT
             ]);
         }
     }
 
-    public function delete_material(Request $request)
-    {
+    public function delete_material(Request $request) {
         if (session("gr_cart") != null) {
             $gr_cart = session("gr_cart");
             $key = array_search($request->uniqid, array_column($gr_cart, 'uniqid'));
             if ($key !== false) {
                 $po_detail = std_get([
-                    "select" => ["TR_PO_DETAIL_SLOC","TR_PO_DETAIL_MATERIAL_CODE","TR_PO_DETAIL_MATERIAL_NAME","TR_PO_DETAIL_PO_HEADER_NUMBER","TR_PO_DETAIL_PLANT_RCV","TR_PO_DETAIL_QTY_ORDER","TR_PO_DETAIL_QTY_DELIV","TR_PO_DETAIL_UOM"],
+                    "select" => ["TR_PO_DETAIL_SLOC", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME", "TR_PO_DETAIL_PO_HEADER_NUMBER", "TR_PO_DETAIL_PLANT_RCV", "TR_PO_DETAIL_QTY_ORDER", "TR_PO_DETAIL_QTY_DELIV", "TR_PO_DETAIL_UOM"],
                     "table_name" => "TR_PO_DETAIL",
                     "where" => [
                         [
@@ -355,26 +343,24 @@ class AddController extends Controller
                     "gr_cart" => $gr_cart
                 ]);
                 return redirect()->route("purchase_order_good_receipt_add", [
-                    'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
-                    'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
-                    'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
-                    'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
-                    'header_note' => $request->TR_GR_HEADER_TXT
+                            'gr_po_number' => $po_detail["TR_PO_DETAIL_PO_HEADER_NUMBER"],
+                            'header_posting_date' => $request->TR_GR_HEADER_PSTG_DATE,
+                            'header_bill_of_landing' => $request->TR_GR_HEADER_BOL,
+                            'header_recipient' => $request->TR_GR_HEADER_RECIPIENT,
+                            'header_note' => $request->TR_GR_HEADER_TXT
                 ]);
             }
         }
         return redirect()->back();
     }
 
-
-    public function save_validate_input($request)
-    {
-        $validate = Validator::make($request->all(),[
-            "po_number" => "required|max:255",
-            "TR_GR_HEADER_PSTG_DATE" => "required",
-            "TR_GR_HEADER_BOL" => "max:255",
-            "TR_GR_HEADER_RECIPIENT" => "required|max:255",
-            "TR_GR_HEADER_TXT" => "required|max:1000"
+    public function save_validate_input($request) {
+        $validate = Validator::make($request->all(), [
+                    "po_number" => "required|max:255",
+                    "TR_GR_HEADER_PSTG_DATE" => "required",
+                    "TR_GR_HEADER_BOL" => "max:255",
+                    "TR_GR_HEADER_RECIPIENT" => "required|max:255",
+                    "TR_GR_HEADER_TXT" => "required|max:1000"
         ]);
 
         $attributeNames = [
@@ -386,28 +372,27 @@ class AddController extends Controller
         ];
 
         $validate->setAttributeNames($attributeNames);
-        if($validate->fails()){
+        if ($validate->fails()) {
             $errors = $validate->errors();
             return $errors->all();
         }
         return true;
     }
 
-    public function save(Request $request)
-    {
+    public function save(Request $request) {
         $validation_res = $this->save_validate_input($request);
         if ($validation_res !== true) {
             return response()->json([
-                'message' => $validation_res
-            ],400);
+                        'message' => $validation_res
+                            ], 400);
         }
 
         $gr_materials = session('gr_cart');
         $timestamp = date("Y-m-d H:i:s");
         if ($gr_materials == NULL) {
             return response()->json([
-                'message' => "GR Material Data Not Exist / Empty"
-            ],500);
+                        'message' => "GR Material Data Not Exist / Empty"
+                            ], 500);
         }
 
         $po_header = std_get([
@@ -425,8 +410,8 @@ class AddController extends Controller
 
         if ($po_header == NULL) {
             return response()->json([
-                'message' => "PO Header Not Exist"
-            ],500);
+                        'message' => "PO Header Not Exist"
+                            ], 500);
         }
 
         $po_detail = std_get([
@@ -465,11 +450,11 @@ class AddController extends Controller
                 ],
                 "first_row" => true
             ]);
-            
+
             if ($master_material == NULL) {
                 return response()->json([
-                    'message' => "Material Master Not Found"
-                ],500);
+                            'message' => "Material Master Not Found"
+                                ], 500);
             }
         }
 
@@ -504,140 +489,147 @@ class AddController extends Controller
 
         if ($gr_id == false) {
             return response()->json([
-                'message' => "Error on saving GR header"
-            ],500);
+                        'message' => "Error on saving GR header"
+                            ], 500);
         }
-        
+
         $gr_material_arr = [];
         $count = 0;
         foreach ($gr_materials as $row) {
-            $qr_code_number = session("plant")."-".uniqid();
+//            try {
 
-            $po_detail = std_get([
-                "select" => ["TR_PO_DETAIL_SLOC","TR_PO_DETAIL_MATERIAL_CODE","TR_PO_DETAIL_PLANT_RCV","TR_PO_DETAIL_QTY_ORDER","TR_PO_DETAIL_QTY_DELIV","TR_PO_DETAIL_UOM"],
-                "table_name" => "TR_PO_DETAIL",
-                "where" => [
-                    [
-                        "field_name" => "TR_PO_DETAIL_ID",
-                        "operator" => "=",
-                        "value" => $row["po_detail_id"]
-                    ]
-                ],
-                "first_row" => true
-            ]);
 
-            $master_material = std_get([
-                "select" => ["*"],
-                "table_name" => "MA_MATL",
-                "where" => [
-                    [
-                        "field_name" => "MA_MATL_CODE",
-                        "operator" => "=",
-                        "value" => $row["material_code"]
+                $qr_code_number = session("plant") . "-" . uniqid();
+
+                $po_detail = std_get([
+                    "select" => ["TR_PO_DETAIL_SLOC", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_PLANT_RCV", "TR_PO_DETAIL_QTY_ORDER", "TR_PO_DETAIL_QTY_DELIV", "TR_PO_DETAIL_UOM"],
+                    "table_name" => "TR_PO_DETAIL",
+                    "where" => [
+                        [
+                            "field_name" => "TR_PO_DETAIL_ID",
+                            "operator" => "=",
+                            "value" => $row["po_detail_id"]
+                        ]
                     ],
-                    [
-                        "field_name" => "MA_MATL_PLANT",
-                        "operator" => "=",
-                        "value" => session("plant")
-                    ]
-                ],
-                "first_row" => true
-            ]);
-            
-            if ($master_material == NULL) {
-                return response()->json([
-                    'message' => "Material Master Not Found, but GR header already saved, please contact your admin"
-                ],500);
-            }
+                    "first_row" => true
+                ]);
 
-            $master_uom_base = std_get([
-                "select" => ["*"],
-                "table_name" => "MA_UOM",
-                "where" => [
-                    [
-                        "field_name" => "MA_UOM_MATCODE",
-                        "operator" => "=",
-                        "value" => $row["material_code"]
+                $master_material = std_get([
+                    "select" => ["*"],
+                    "table_name" => "MA_MATL",
+                    "where" => [
+                        [
+                            "field_name" => "MA_MATL_CODE",
+                            "operator" => "=",
+                            "value" => $row["material_code"]
+                        ],
+                        [
+                            "field_name" => "MA_MATL_PLANT",
+                            "operator" => "=",
+                            "value" => session("plant")
+                        ]
                     ],
-                    [
-                        "field_name" => "MA_UOM_UOM",
-                        "operator" => "=",
-                        "value" => $master_material["MA_MATL_UOM"]
-                    ]
-                ],
-                "first_row" => true
-            ]);
+                    "first_row" => true
+                ]);
 
-            $master_uom_comparison = std_get([
-                "select" => ["*"],
-                "table_name" => "MA_UOM",
-                "where" => [
-                    [
-                        "field_name" => "MA_UOM_MATCODE",
-                        "operator" => "=",
-                        "value" => $row["material_code"]
+                if ($master_material == NULL) {
+                    return response()->json([
+                                'message' => "Material Master Not Found, but GR header already saved, please contact your admin"
+                                    ], 500);
+                }
+
+                $master_uom_base = std_get([
+                    "select" => ["*"],
+                    "table_name" => "MA_UOM",
+                    "where" => [
+                        [
+                            "field_name" => "MA_UOM_MATCODE",
+                            "operator" => "=",
+                            "value" => $row["material_code"]
+                        ],
+                        [
+                            "field_name" => "MA_UOM_UOM",
+                            "operator" => "=",
+                            "value" => $master_material["MA_MATL_UOM"]
+                        ]
                     ],
+                    "first_row" => true
+                ]);
+
+                $master_uom_comparison = std_get([
+                    "select" => ["*"],
+                    "table_name" => "MA_UOM",
+                    "where" => [
+                        [
+                            "field_name" => "MA_UOM_MATCODE",
+                            "operator" => "=",
+                            "value" => $row["material_code"]
+                        ],
+                        [
+                            "field_name" => "MA_UOM_UOM",
+                            "operator" => "=",
+                            "value" => $po_detail["TR_PO_DETAIL_UOM"]
+                        ]
+                    ],
+                    "first_row" => true
+                ]);
+//            var_dump($master_uom_base);echo "<br/>";
+//            var_dump([$master_material["MA_MATL_UOM"],$po_detail["TR_PO_DETAIL_UOM"]]);echo "<br/>";
+
+                if (($master_uom_base["MA_UOM_ID"] == $master_uom_comparison["MA_UOM_ID"]) || (empty($master_uom_comparison['MA_UOM_NUM']) && empty($master_uom_comparison["MA_UOM_DEN"]))) {
+                    $base_qty = $row["qty"];
+                    $qty_left = $base_qty;
+                } else {
+                    $base_qty = ($row["qty"] * $master_uom_comparison["MA_UOM_NUM"]) / $master_uom_comparison["MA_UOM_DEN"];
+                    $qty_left = $base_qty;
+                }
+
+                $count++;
+
+                $gr_material_arr = array_merge($gr_material_arr, [
                     [
-                        "field_name" => "MA_UOM_UOM",
-                        "operator" => "=",
-                        "value" => $po_detail["TR_PO_DETAIL_UOM"]
+                        "TR_GR_DETAIL_HEADER_ID" => $gr_id,
+                        "TR_GR_DETAIL_MATERIAL_CODE" => $row["material_code"],
+                        "TR_GR_DETAIL_MATERIAL_NAME" => $row["material_name"],
+                        "TR_GR_DETAIL_SAP_BATCH" => $row["batch"],
+                        "TR_GR_DETAIL_QTY" => $row["qty"],
+                        "TR_GR_DETAIL_UOM" => $row["uom"],
+                        "TR_GR_DETAIL_BASE_QTY" => $base_qty,
+                        "TR_GR_DETAIL_BASE_UOM" => $master_material["MA_MATL_UOM"],
+                        "TR_GR_DETAIL_LEFT_QTY" => NULL,
+                        "TR_GR_DETAIL_UNLOADING_PLANT" => $po_detail["TR_PO_DETAIL_PLANT_RCV"],
+                        "TR_GR_DETAIL_GL_ACCOUNT" => NULL,
+                        "TR_GR_DETAIL_COST_CENTER" => NULL,
+                        "TR_GR_DETAIL_EXP_DATE" => $row["expired_date"],
+                        "TR_GR_DETAIL_IMG_QRCODE" => NULL,
+                        "TR_GR_DETAIL_NOTES" => $row["TR_GR_DETAIL_NOTES"],
+                        "TR_GR_DETAIL_PHOTO" => NULL,
+                        "TR_GR_DETAIL_CREATED_BY" => session("id"),
+                        "TR_GR_DETAIL_CREATED_TIMESTAMP" => $timestamp,
+                        "TR_GR_DETAIL_UPDATED_BY" => NULL,
+                        "TR_GR_DETAIL_UPDATED_TIMESTAMP" => NULL,
+                        "TR_GR_DETAIL_QR_CODE_NUMBER" => $qr_code_number,
+                        "TR_GR_DETAIL_SLOC" => $row["TR_GR_DETAIL_SLOC"],
+                        "TR_GR_DETAIL_PO_DETAIL_ID" => $row["po_detail_id"],
+                        "TR_GR_DETAIL_SAPLINE_ID" => $count
                     ]
-                ],
-                "first_row" => true
-            ]);
-
-            if ($master_uom_base["MA_UOM_ID"] == $master_uom_comparison["MA_UOM_ID"]) {
-                $base_qty = $row["qty"];
-                $qty_left = $base_qty;
-            }
-            else{
-                $base_qty = ($row["qty"] * $master_uom_comparison["MA_UOM_NUM"]) / $master_uom_comparison["MA_UOM_DEN"];
-                $qty_left = $base_qty;
-            }
-
-            $count++;
-
-            $gr_material_arr = array_merge($gr_material_arr, [
-                [
-                    "TR_GR_DETAIL_HEADER_ID" => $gr_id,
-                    "TR_GR_DETAIL_MATERIAL_CODE" => $row["material_code"],
-                    "TR_GR_DETAIL_MATERIAL_NAME" => $row["material_name"],
-                    "TR_GR_DETAIL_SAP_BATCH" => $row["batch"],
-                    "TR_GR_DETAIL_QTY" => $row["qty"],
-                    "TR_GR_DETAIL_UOM" => $row["uom"],
-                    "TR_GR_DETAIL_BASE_QTY" => $base_qty,
-                    "TR_GR_DETAIL_BASE_UOM" => $master_material["MA_MATL_UOM"],
-                    "TR_GR_DETAIL_LEFT_QTY" => NULL,
-                    "TR_GR_DETAIL_UNLOADING_PLANT" => $po_detail["TR_PO_DETAIL_PLANT_RCV"],
-                    "TR_GR_DETAIL_GL_ACCOUNT" => NULL,
-                    "TR_GR_DETAIL_COST_CENTER" => NULL,
-                    "TR_GR_DETAIL_EXP_DATE" => $row["expired_date"],
-                    "TR_GR_DETAIL_IMG_QRCODE" => NULL,
-                    "TR_GR_DETAIL_NOTES" => $row["TR_GR_DETAIL_NOTES"],
-                    "TR_GR_DETAIL_PHOTO" => NULL,
-                    "TR_GR_DETAIL_CREATED_BY" => session("id"),
-                    "TR_GR_DETAIL_CREATED_TIMESTAMP" => $timestamp,
-                    "TR_GR_DETAIL_UPDATED_BY" => NULL,
-                    "TR_GR_DETAIL_UPDATED_TIMESTAMP" => NULL,
-                    "TR_GR_DETAIL_QR_CODE_NUMBER" => $qr_code_number,
-                    "TR_GR_DETAIL_SLOC" => $row["TR_GR_DETAIL_SLOC"],
-                    "TR_GR_DETAIL_PO_DETAIL_ID" => $row["po_detail_id"],
-                    "TR_GR_DETAIL_SAPLINE_ID" => $count
-                ]
-            ]);
+                ]);
+//            } catch (\Exception $e) {
+//
+//                return $e->getMessage();
+//            }
         }
+            $insert_res = std_insert([
+                "table_name" => "TR_GR_DETAIL",
+                "data" => $gr_material_arr
+            ]);
 
-        $insert_res = std_insert([
-            "table_name" => "TR_GR_DETAIL",
-            "data" => $gr_material_arr
-        ]);
+            generate_gr_csv($gr_id, session("plant"));
 
-        generate_gr_csv($gr_id, session("plant"));
+            $request->session()->forget('gr_cart');
 
-        $request->session()->forget('gr_cart');
-
-        return response()->json([
-            'message' => "GR Successfully Created"
-        ],200);
+            return response()->json([
+                        'message' => "GR Successfully Created"
+                            ], 200);
+        }
     }
-}

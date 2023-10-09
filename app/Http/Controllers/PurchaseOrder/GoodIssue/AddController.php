@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\PurchaseOrder\GoodIssue;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
 
-function get_gr_data($material_code, $plant_code)
-{
+function get_gr_data($material_code, $plant_code) {
+//    dd([$material_code,$plant_code]);
     return std_get([
         "select" => ["*"],
         "table_name" => "TR_GR_HEADER",
@@ -80,11 +81,10 @@ function get_gr_data($material_code, $plant_code)
     ]);
 }
 
-function get_gr_fifo_list($po_detail)
-{
+function get_gr_fifo_list($po_detail) {
     $res_data = [];
     $gr_data = get_gr_data($po_detail["TR_PO_DETAIL_MATERIAL_CODE"], session("plant"));
-
+//dd($gr_data);
     $master_uom_comparison = std_get([
         "select" => ["*"],
         "table_name" => "MA_UOM",
@@ -103,20 +103,27 @@ function get_gr_fifo_list($po_detail)
         "first_row" => true
     ]);
 
-    $gi_qty_check = ($po_detail["TR_PO_DETAIL_QTY_ORDER"] * $master_uom_comparison["MA_UOM_NUM"]) / $master_uom_comparison["MA_UOM_DEN"];
     
+    if (!$master_uom_comparison) {
+        $gi_qty_check = 0;
+    } else {
+        $gi_qty_check = ($po_detail["TR_PO_DETAIL_QTY_ORDER"] * $master_uom_comparison["MA_UOM_NUM"]) / $master_uom_comparison["MA_UOM_DEN"];
+    }
     if (!isset($po_detail["TR_GI_DETAIL_NOTES"])) {
         $po_detail["TR_GI_DETAIL_NOTES"] = NULL;
     }
-
+//    dd($gi_qty_check);
+//echo json_encode($gi_qty_check, 1);
+//    dd($master_uom_comparison);
+    
     $po_qty = $gi_qty_check;
 
     foreach ($gr_data as $gr_row) {
         $gr_qty = $gr_row["TR_GR_DETAIL_LEFT_QTY"];
         $gi_qty_check -= $gr_row["TR_GR_DETAIL_LEFT_QTY"];
-        
+
         if ($gi_qty_check <= 0) {
-            
+
             $res_data = array_merge($res_data, [
                 [
                     "uniqid" => uniqid(),
@@ -124,7 +131,7 @@ function get_gr_fifo_list($po_detail)
                     "po_detail_id" => $po_detail["TR_PO_DETAIL_ID"],
                     "material_code" => $po_detail["TR_PO_DETAIL_MATERIAL_CODE"],
                     "material_name" => $po_detail["TR_PO_DETAIL_MATERIAL_NAME"],
-                    "qty" => $gr_row["TR_GR_DETAIL_LEFT_QTY"]- abs($gi_qty_check),
+                    "qty" => $gr_row["TR_GR_DETAIL_LEFT_QTY"] - abs($gi_qty_check),
                     "uom" => $gr_row["TR_GR_DETAIL_BASE_UOM"],
                     "batch" => $gr_row["TR_GR_DETAIL_SAP_BATCH"],
                     "expired_date" => $gr_row["TR_GR_DETAIL_EXP_DATE"],
@@ -132,8 +139,7 @@ function get_gr_fifo_list($po_detail)
                 ]
             ]);
             break;
-        }
-        else{
+        } else {
             if ($po_qty > $gr_qty) {
                 $gi_qty = $gr_qty;
             }
@@ -153,6 +159,7 @@ function get_gr_fifo_list($po_detail)
             ]);
         }
     }
+//    dd($gi_qty_check);
 
     if ($gi_qty_check > 0) {
         return [
@@ -163,18 +170,15 @@ function get_gr_fifo_list($po_detail)
                 "err_qty" => $gi_qty_check,
             ]
         ];
-    }
-    else{
+    } else {
         return [
             "status" => true,
             "data" => $res_data
         ];
     }
-    
 }
 
-function get_lock_data($gi_po_number)
-{
+function get_lock_data($gi_po_number) {
     return std_get([
         "select" => ["*"],
         "table_name" => "TR_GR_DETAIL_LOCK",
@@ -203,10 +207,9 @@ function get_lock_data($gi_po_number)
     ]);
 }
 
-class AddController extends Controller
-{
-    public function index(Request $request)
-    {
+class AddController extends Controller {
+
+    public function index(Request $request) {
         $gi_data = std_get([
             "select" => ["*"],
             "table_name" => "TR_GI_SAPHEADER",
@@ -222,7 +225,7 @@ class AddController extends Controller
         if ($gi_data != NULL) {
             return back()->withInput();
         }
-        
+
         $data = std_get([
             "select" => ["*"],
             "table_name" => "TR_PO_HEADER",
@@ -235,7 +238,7 @@ class AddController extends Controller
             ],
             "first_row" => true
         ]);
-        
+
         $detail_data = std_get([
             "select" => ["*"],
             "table_name" => "TR_PO_DETAIL",
@@ -250,15 +253,16 @@ class AddController extends Controller
         ]);
 
         $lock_data = get_lock_data($request->gi_po_number);
-        
+
         if ($lock_data == null) {
             $gi_cart_system_generated = [];
             foreach ($detail_data as $row) {
                 $fifo_res = get_gr_fifo_list($row);
+//var_dump($row);
+//dd($fifo_res);
                 if ($fifo_res["status"] == true) {
                     $gi_cart_system_generated = array_merge($gi_cart_system_generated, $fifo_res["data"]);
-                }
-                else{
+                } else {
                     $request->session()->flash('fifo_res', $fifo_res["data"]);
                     return redirect()->route('purchase_order_good_issue_view');
                 }
@@ -288,8 +292,7 @@ class AddController extends Controller
         $movement_code = "";
         if ($data["TR_PO_HEADER_TYPE"] == "ZSTO") {
             $movement_code = "351";
-        }
-        elseif ($data["TR_PO_HEADER_TYPE"] == "ZRET") {
+        } elseif ($data["TR_PO_HEADER_TYPE"] == "ZRET") {
             $movement_code = "161";
         }
 
@@ -306,10 +309,9 @@ class AddController extends Controller
         ]);
     }
 
-    public function get_materials(Request $request)
-    {
+    public function get_materials(Request $request) {
         $materials = std_get([
-            "select" => ["TR_PO_DETAIL_ID","TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME"],
+            "select" => ["TR_PO_DETAIL_ID", "TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_MATERIAL_NAME"],
             "table_name" => "TR_PO_DETAIL",
             "where" => [
                 [
@@ -323,26 +325,24 @@ class AddController extends Controller
             foreach ($materials as $row) {
                 $materials_adj[] = [
                     "id" => $row["TR_PO_DETAIL_ID"],
-                    "text" => $row["TR_PO_DETAIL_MATERIAL_CODE"]." - ".$row["TR_PO_DETAIL_MATERIAL_NAME"]
+                    "text" => $row["TR_PO_DETAIL_MATERIAL_CODE"] . " - " . $row["TR_PO_DETAIL_MATERIAL_NAME"]
                 ];
             }
             return response()->json([
-                "status" => "OK",
-                "data" => $materials_adj
-            ],200);
-        }
-        else{
+                        "status" => "OK",
+                        "data" => $materials_adj
+                            ], 200);
+        } else {
             return response()->json([
-                "status" => "OK",
-                "data" => []
-            ],200);
+                        "status" => "OK",
+                        "data" => []
+                            ], 200);
         }
     }
 
-    public function get_material_gr(Request $request)
-    {
+    public function get_material_gr(Request $request) {
         $po_detail = std_get([
-            "select" => ["TR_PO_DETAIL_MATERIAL_CODE","TR_PO_DETAIL_PLANT_RCV"],
+            "select" => ["TR_PO_DETAIL_MATERIAL_CODE", "TR_PO_DETAIL_PLANT_RCV"],
             "table_name" => "TR_PO_DETAIL",
             "where" => [
                 [
@@ -353,27 +353,26 @@ class AddController extends Controller
             ],
             "first_row" => true
         ]);
-
         $gr_data = get_gr_data($po_detail["TR_PO_DETAIL_MATERIAL_CODE"], session("plant"));
+//dd($gr_data);
 
         $select2 = [];
         foreach ($gr_data as $row) {
             $select2 = array_merge($select2, [
                 [
                     "id" => $row["TR_GR_DETAIL_ID"],
-                    "text" => $row["TR_GR_DETAIL_ID"]." - ".number_format($row["TR_GR_DETAIL_LEFT_QTY"])." ".$row["TR_GR_DETAIL_BASE_UOM"]
+                    "text" => $row["TR_GR_DETAIL_ID"] . " - " . number_format($row["TR_GR_DETAIL_LEFT_QTY"]) . " " . $row["TR_GR_DETAIL_BASE_UOM"]
                 ]
             ]);
         }
 
         return response()->json([
-            "status" => "OK",
-            "data" => $select2
-        ],200);
+                    "status" => "OK",
+                    "data" => $select2
+                        ], 200);
     }
-    
-    public function get_material_status(Request $request)
-    {
+
+    public function get_material_status(Request $request) {
         $gr_data = std_get([
             "select" => ["TR_GR_DETAIL.*"],
             "table_name" => "TR_GR_HEADER",
@@ -404,17 +403,16 @@ class AddController extends Controller
         $gr_data["TR_GR_DETAIL_LEFT_QTY"] = number_format($gr_data["TR_GR_DETAIL_LEFT_QTY"]);
 
         return response()->json([
-            "status" => "OK",
-            "data" => $gr_data
-        ],200);
+                    "status" => "OK",
+                    "data" => $gr_data
+                        ], 200);
     }
 
-    public function save_material_validate_input($request)
-    {
-        $validate = Validator::make($request->all(),[
-            "gr_detail_id" => "required|max:255",
-            "gi_qty" => "required|max:255",
-            "gi_note" => "required|max:1000",
+    public function save_material_validate_input($request) {
+        $validate = Validator::make($request->all(), [
+                    "gr_detail_id" => "required|max:255",
+                    "gi_qty" => "required|max:255",
+                    "gi_note" => "required|max:1000",
         ]);
 
         $attributeNames = [
@@ -424,20 +422,19 @@ class AddController extends Controller
         ];
 
         $validate->setAttributeNames($attributeNames);
-        if($validate->fails()){
+        if ($validate->fails()) {
             $errors = $validate->errors();
             return $errors->all();
         }
         return true;
     }
 
-    public function save_material(Request $request)
-    {
+    public function save_material(Request $request) {
         $validation_res = $this->save_material_validate_input($request);
         if ($validation_res !== true) {
             return response()->json([
-                'message' => $validation_res
-            ],400);
+                        'message' => $validation_res
+                            ], 400);
         }
         $gr_data = std_get([
             "select" => ["*"],
@@ -467,12 +464,11 @@ class AddController extends Controller
         ]);
 
         return redirect()->route("purchase_order_good_issue_add", [
-            'gi_po_number' => $request->po_number
+                    'gi_po_number' => $request->po_number
         ]);
     }
 
-    public function delete_material(Request $request)
-    {
+    public function delete_material(Request $request) {
         $delete_res = std_delete([
             "table_name" => "TR_GR_DETAIL_LOCK",
             "where" => [
@@ -482,48 +478,45 @@ class AddController extends Controller
         return redirect()->back();
     }
 
-
-    public function save_validate_input($request)
-    {
-        $validate = Validator::make($request->all(),[
-            "po_number" => "required|max:255",
-            // "TR_GI_HEADER_PSTG_DATE" => "required",
-            // "TR_GI_HEADER_BOL" => "required|max:255",
-            // "TR_GI_HEADER_RECIPIENT" => "required|max:255",
-            // "TR_GI_HEADER_TXT" => "max:1000"
+    public function save_validate_input($request) {
+        $validate = Validator::make($request->all(), [
+                    "po_number" => "required|max:255",
+                        // "TR_GI_HEADER_PSTG_DATE" => "required",
+                        // "TR_GI_HEADER_BOL" => "required|max:255",
+                        // "TR_GI_HEADER_RECIPIENT" => "required|max:255",
+                        // "TR_GI_HEADER_TXT" => "max:1000"
         ]);
 
         $attributeNames = [
             "po_number" => "PO Number",
-            // "TR_GI_HEADER_PSTG_DATE" => "Posting Date",
-            // "TR_GI_HEADER_BOL" => "Bill Of Landing",
-            // "TR_GI_HEADER_RECIPIENT" => "Recipient",
-            // "TR_GI_HEADER_TXT" => "Note"
+                // "TR_GI_HEADER_PSTG_DATE" => "Posting Date",
+                // "TR_GI_HEADER_BOL" => "Bill Of Landing",
+                // "TR_GI_HEADER_RECIPIENT" => "Recipient",
+                // "TR_GI_HEADER_TXT" => "Note"
         ];
 
         $validate->setAttributeNames($attributeNames);
-        if($validate->fails()){
+        if ($validate->fails()) {
             $errors = $validate->errors();
             return $errors->all();
         }
         return true;
     }
 
-    public function save(Request $request)
-    {
+    public function save(Request $request) {
         $validation_res = $this->save_validate_input($request);
         if ($validation_res !== true) {
             return response()->json([
-                'message' => $validation_res
-            ],400);
+                        'message' => $validation_res
+                            ], 400);
         }
 
         $gi_materials = get_lock_data($request->po_number);
         $timestamp = date("Y-m-d H:i:s");
         if ($gi_materials == NULL) {
             return response()->json([
-                'message' => "GI Material Data Not Exist / Empty"
-            ],500);
+                        'message' => "GI Material Data Not Exist / Empty"
+                            ], 500);
         }
 
         $delete_status = false;
@@ -542,8 +535,8 @@ class AddController extends Controller
 
         if ($delete_status === true) {
             return response()->json([
-                'message' => "GR Locked data is already expired, GI Material Will Be Repopulated!"
-            ],500);
+                        'message' => "GR Locked data is already expired, GI Material Will Be Repopulated!"
+                            ], 500);
         }
 
         $po_header = std_get([
@@ -561,8 +554,8 @@ class AddController extends Controller
 
         if ($po_header == NULL) {
             return response()->json([
-                'message' => "PO Header Not Exist"
-            ],500);
+                        'message' => "PO Header Not Exist"
+                            ], 500);
         }
 
         $po_detail = std_get([
@@ -614,11 +607,11 @@ class AddController extends Controller
                 ],
                 "first_row" => true
             ]);
-            
+
             if ($master_material == NULL) {
                 return response()->json([
-                    'message' => "Master Material Tidak Ditemukan"
-                ],500);
+                            'message' => "Master Material Tidak Ditemukan"
+                                ], 500);
             }
 
             $master_uom_base = std_get([
@@ -659,8 +652,7 @@ class AddController extends Controller
 
             if ($master_uom_base["MA_UOM_ID"] == $master_uom_comparison["MA_UOM_ID"]) {
                 $base_qty = $row["TR_PO_DETAIL_QTY_ORDER"];
-            }
-            else{
+            } else {
                 $base_qty = ($row["TR_PO_DETAIL_QTY_ORDER"] * $master_uom_comparison["MA_UOM_NUM"]) / $master_uom_comparison["MA_UOM_DEN"];
             }
 
@@ -668,23 +660,22 @@ class AddController extends Controller
 
             $material_code = $row["TR_PO_DETAIL_MATERIAL_CODE"];
             $material_name = $row["TR_PO_DETAIL_MATERIAL_NAME"];
-            for ($i=0; $i < count($gi_materials); $i++) { 
+            for ($i = 0; $i < count($gi_materials); $i++) {
                 if ($row["TR_PO_DETAIL_MATERIAL_CODE"] == $gi_materials[$i]["TR_GR_DETAIL_MATERIAL_CODE"]) {
                     $check_qty -= $gi_materials[$i]["TR_GR_DETAIL_LOCK_BOOKED_QTY"];
                 }
             }
             if ($check_qty != 0) {
                 return response()->json([
-                    'message' => $material_code." ".$material_name." must be a full GI"
-                ],500);
+                            'message' => $material_code . " " . $material_name . " must be a full GI"
+                                ], 500);
             }
         }
 
         $movement_code = "";
         if ($po_header["TR_PO_HEADER_TYPE"] == "ZSTO") {
             $movement_code = "351";
-        }
-        elseif ($po_header["TR_PO_HEADER_TYPE"] == "ZRET") {
+        } elseif ($po_header["TR_PO_HEADER_TYPE"] == "ZRET") {
             $movement_code = "101";
         }
 
@@ -697,8 +688,8 @@ class AddController extends Controller
             }
             if ($check_res == false) {
                 return response()->json([
-                    'message' => "GI item not exist on PO detail data"
-                ],500);
+                            'message' => "GI item not exist on PO detail data"
+                                ], 500);
             }
         }
 
@@ -727,10 +718,10 @@ class AddController extends Controller
 
         if ($gi_id == false) {
             return response()->json([
-                'message' => "Error on saving GI header"
-            ],500);
+                        'message' => "Error on saving GI header"
+                            ], 500);
         }
-        
+
         $gi_material_arr = [];
         $count = 1;
 
@@ -767,8 +758,8 @@ class AddController extends Controller
             }
             if ($check_res == false) {
                 return response()->json([
-                    'message' => "FATAL ERR - GI item not exist on PO detail data"
-                ],500);
+                            'message' => "FATAL ERR - GI item not exist on PO detail data"
+                                ], 500);
             }
         }
 
@@ -797,7 +788,7 @@ class AddController extends Controller
         }
 
         return response()->json([
-            'message' => "GI Successfully Created"
-        ],200);
+                    'message' => "GI Successfully Created"
+                        ], 200);
     }
 }

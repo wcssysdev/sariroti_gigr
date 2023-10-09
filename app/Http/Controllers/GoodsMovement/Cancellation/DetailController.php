@@ -259,7 +259,7 @@ class DetailController extends Controller
 	                        "on2" => "TR_TP_DETAIL.TR_TP_DETAIL_ID",
 	                    ],
 	                    [
-	                        "join_type" => "inner",
+	                        "join_type" => "LEFT",
 	                        "table_name" => "TR_GR_DETAIL",
 	                        "on1" => "TR_TP_DETAIL.TR_TP_DETAIL_GR_DETAIL_ID",
 	                        "operator" => "=",

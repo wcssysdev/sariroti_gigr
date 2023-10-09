@@ -12,30 +12,33 @@ $(function () {
         placeholder: "Choose Document Type"
     });
 
-    $("#doc_type_select2").on("change", function () {
+    $("#doc_type_select2").on("change", function (e) {
+        e.preventDefault();
+        $('#doc_number_select2').empty();
         $.ajax({
             type: "GET",
             url: $("#form").data("get-doc-number"),
             data: {
-                "doc_type": $(this).val()
+                "doc_type": $(this).val(),
+                "doc_year": $('#doc_year').val(),
             },
             dataType: "JSON",
             success: function (response) {
-                $('#doc_number_select2').empty().trigger("change");
                 $('#doc_number_select2').select2({
                     placeholder: "Choose Document Number",
                     allowClear: true,
                     data: response,
                     width: '100%'
-                })
-                $("#doc_number_select2").val('').trigger('change');
+                });
 
-                $("#doc_number_select2").on("change", function () {
+                $("#doc_number_select2").on("change", function (ev) {
+                    ev.preventDefault();
                     $.ajax({
                         type: "GET",
                         url: $("#form").data("get-doc-number-detail"),
                         data: {
                             "doc_number": $(this).val(),
+                            "doc_year": $('#doc_year').val(),
                             "doc_type": $('#doc_type_select2').val()
                         },
                         dataType: "JSON",
@@ -52,6 +55,54 @@ $(function () {
                         }
                     })
                 })
+//                $('#doc_number_select2').empty().trigger("change");
+            }
+        })
+    })
+    $("#doc_year").on("change", function (e) {
+        e.preventDefault();
+        $('#doc_number_select2').empty();
+        $.ajax({
+            type: "GET",
+            url: $("#form").data("get-doc-number"),
+            data: {
+                "doc_type": $('#doc_type_select2').val(),
+                "doc_year": $(this).val(),
+            },
+            dataType: "JSON",
+            success: function (response) {
+                $('#doc_number_select2').select2({
+                    placeholder: "Choose Document Number",
+                    allowClear: true,
+                    data: response,
+                    width: '100%'
+                });
+
+                $("#doc_number_select2").on("change", function (ev) {
+                    ev.preventDefault();
+                    $.ajax({
+                        type: "GET",
+                        url: $("#form").data("get-doc-number-detail"),
+                        data: {
+                            "doc_number": $(this).val(),
+                            "doc_year": $('#doc_year').val(),
+                            "doc_type": $('#doc_type_select2').val()
+                        },
+                        dataType: "JSON",
+                        success: function (response) {
+                            if (response.type == "GR") {
+                                $('#view_doc_btn').attr("href", $("#form").data("detail-gr-url") + "?gr_header_id=" + response.data.TR_GR_HEADER_ID)
+                            }
+                            else if (response.type == "GI") {
+                                $('#view_doc_btn').attr("href", $("#form").data("detail-gi-url") + "?gi_header_id=" + response.data.TR_GI_SAPHEADER_ID)
+                            }
+                            else if (response.type == "TP") {
+                                $('#view_doc_btn').attr("href", $("#form").data("detail-tp-url") + "?tp_header_id=" + response.data.TR_TP_HEADER_ID)
+                            }
+                        }
+                    })
+                })
+//                $('#doc_number_select2').empty().trigger("change");
             }
         })
     })

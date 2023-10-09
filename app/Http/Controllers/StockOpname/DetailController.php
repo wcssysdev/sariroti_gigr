@@ -37,7 +37,7 @@ class DetailController extends Controller
                 ]
             ],
         ]);
-
+//dd([$request->pid_id,$data]);
         return view('transaction/stock_opname/detail', [
             'header_data' => $data,
             'detail_data' => $detail_data

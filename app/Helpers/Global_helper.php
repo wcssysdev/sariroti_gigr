@@ -372,7 +372,7 @@ function base_assets_url($service_type, $image_name)
 function ldap_login($email = null, $password = null)
 {
     if ($email != null && $password != null) {
-        $server = gethostbyname("sso.sariroti.com");
+        $server = gethostbyname("ssodev.sariroti.com");
         $ds = ldap_connect($server, 389);
         if (false === $ds) {
             return 500;
@@ -943,7 +943,7 @@ function generate_cancellation_csv($cancellation_id, $plant_code)
                     "on2" => "TR_TP_DETAIL.TR_TP_DETAIL_ID",
                 ],
                 [
-                    "join_type" => "inner",
+                    "join_type" => "LEFT",
                     "table_name" => "TR_GR_DETAIL",
                     "on1" => "TR_TP_DETAIL.TR_TP_DETAIL_GR_DETAIL_ID",
                     "operator" => "=",
