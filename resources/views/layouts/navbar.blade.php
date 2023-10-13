@@ -43,17 +43,17 @@
                             <span class="text-white opacity-50 font-weight-bold font-size-sm d-none d-md-inline">{{ session('name') }}</span>
                             <span class="text-white font-weight-bolder font-size-sm d-none d-md-inline">
                                 @if (session('user_role') == 1)
-                                    Admin
+                                Admin
                                 @elseif (session('user_role') == 2)
-                                    PPIC
+                                PPIC
                                 @elseif (session('user_role') == 3)
-                                    Warehouse Mobile
+                                Warehouse Mobile
                                 @elseif (session('user_role') == 4)
-                                    Costing
+                                Costing
                                 @elseif (session('user_role') == 5)
-                                    Warehouse
+                                Warehouse
                                 @elseif (session('user_role') == 6)
-                                    Head PPIC
+                                Head PPIC
                                 @endif
                             </span>
                         </div>
@@ -119,7 +119,7 @@
                                         <span class="menu-text">Plant</span>
                                     </a>
                                 </li>
-                                
+
                                 <li class="menu-item {{ request()->is('master_data/sloc/*') ? 'menu-item-active' : '' }}" aria-haspopup="true">
                                     <a href="{{ route("master_data_sloc_view") }}" class="menu-link">
                                         <span class="menu-text">Storage Location</span>
@@ -194,10 +194,15 @@
                                         <span class="menu-text">Good Receipt</span>
                                     </a>
                                 </li>
-                                
+
                                 <li class="menu-item {{ request()->is('purchase_order/good_issue/*') ? 'menu-item-active' : '' }}" aria-haspopup="true">
                                     <a href="{{ route("purchase_order_good_issue_view") }}" class="menu-link">
                                         <span class="menu-text">Good Issue</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ request()->is('purchase_order/good_issue/*') ? 'menu-item-active' : '' }}" aria-haspopup="true">
+                                    <a href="{{ route("purchase_order_good_issue_view_") }}" class="menu-link">
+                                        <span class="menu-text">Good Issue 2</span>
                                     </a>
                                 </li>
                                 @endif
@@ -237,7 +242,7 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                     <div class="tab-pane p-5 p-lg-0 justify-content-between {{ request()->is('report/*') ? 'show active' : '' }}" id="kt_header_tab_6">
                         <div id="kt_header_menu" class="header-menu header-menu-mobile header-menu-layout-default">
                             <ul class="menu-nav">
