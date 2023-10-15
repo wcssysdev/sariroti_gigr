@@ -8,8 +8,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
 
+/**
+ * get_gr_data
+ *
+ * @param  mixed $material_code
+ * @param  mixed $plant_code
+ * @return void
+ */
 function get_gr_data($material_code, $plant_code)
 {
+
     //    dd([$material_code,$plant_code]);
     return std_get([
         "select" => ["*"],
@@ -82,6 +90,12 @@ function get_gr_data($material_code, $plant_code)
     ]);
 }
 
+/**
+ * get_gr_fifo_list
+ *
+ * @param  mixed $po_detail
+ * @return void
+ */
 function get_gr_fifo_list($po_detail)
 {
     $res_data = [];

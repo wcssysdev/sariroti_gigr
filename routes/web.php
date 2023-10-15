@@ -125,6 +125,11 @@ Route::group(['middleware' => 'check_user_session:1,2,3,5,6'], function () {
     Route::get('/purchase_order/good_issue/detail_print_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@print')->name('purchase_order_good_issue_detail_print_');
     Route::get('/purchase_order/good_issue/delete_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@delete')->name('purchase_order_good_issue_detail_delete_');
     //GI STO Dede Krisna
+
+
+    //Post GI Dede Krisna
+    Route::get('purchase_order/good_issue/post', 'PurchaseOrder\GoodIssue\PostsController\PostsController@index')->name('purchase_order_good_issue_post');
+    //Post GI Dede Krisna
 });
 
 Route::group(['middleware' => 'check_user_session:2,3,5,6'], function () {
