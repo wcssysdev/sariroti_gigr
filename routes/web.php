@@ -63,7 +63,7 @@ Route::group(['middleware' => 'check_user_session:1'], function () {
 
     Route::get('/purchase_order/master/view', 'PurchaseOrder\Master\ViewController@index')->name('purchase_order_master_view');
     Route::get('/purchase_order/master/detail', 'PurchaseOrder\Master\ViewController@detail')->name('purchase_order_master_view_detail');
-
+    
     Route::post('/purchase_order/master/request_sap', 'PurchaseOrder\Master\ViewController@master_data_request_sap')->name('purchase_order_master_request_sap');
     Route::post('/purchase_order/master/sync_sap', 'PurchaseOrder\Master\ViewController@master_data_sync_sap')->name('purchase_order_master_sync_sap');
 });
@@ -104,8 +104,8 @@ Route::group(['middleware' => 'check_user_session:1,2,3,5,6'], function () {
     Route::get('/purchase_order/good_receipt/delete', 'PurchaseOrder\GoodReceipt\DetailController@delete')->name('purchase_order_good_receipt_detail_delete');
     Route::get('/purchase_order/good_receipt/detail/detail/print_qr', 'PurchaseOrder\GoodReceipt\DetailController@print_qr')->name('purchase_order_good_receipt_detail_detail_qr_code');
 
-    Route::get('/good_receive/purchase_order/view', 'GoodReceive\PurchaseOrder\ViewController@index')->name('transaction_purchase_order_view');
-    Route::get('/good_receive/purchase_order/detail', 'GoodReceive\PurchaseOrder\DetailController@index')->name('transaction_purchase_order_detail');
+//    Route::get('/good_receive/purchase_order/view', 'GoodReceive\PurchaseOrder\ViewController@index')->name('transaction_purchase_order_view');
+//    Route::get('/good_receive/purchase_order/detail', 'GoodReceive\PurchaseOrder\DetailController@index')->name('transaction_purchase_order_detail');
 
 
     //GI STO
@@ -115,15 +115,14 @@ Route::group(['middleware' => 'check_user_session:1,2,3,5,6'], function () {
     Route::get('/purchase_order/good_issue/detail/detail/print_qr', 'PurchaseOrder\GoodIssue\DetailController@print_qr')->name('purchase_order_good_issue_detail_detail_qr_code');
     Route::get('/purchase_order/good_issue/detail_print', 'PurchaseOrder\GoodIssue\DetailController@print')->name('purchase_order_good_issue_detail_print');
     Route::get('/purchase_order/good_issue/delete', 'PurchaseOrder\GoodIssue\DetailController@delete')->name('purchase_order_good_issue_detail_delete');
+    /**
+     * Nov 2023
+     * 1. GI Plan ditiadakan, tidak ada kirim ke mobile
+     * 2. GI Langsung bisa closing
+     */
 
 
     //GI STO Dede Krisna
-    Route::get('purchase_order/good_issue/view_', 'PurchaseOrder\GoodIssue\GoodIssue\ViewController@index')->name('purchase_order_good_issue_view_');
-    Route::get('purchase_order/good_issue/detail_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@index')->name('purchase_order_good_issue_detail_');
-    Route::get('/purchase_order/good_issue/detail/detail_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@detail')->name('purchase_order_good_issue_detail_detail_');
-    Route::get('/purchase_order/good_issue/detail/detail/print_qr_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@print_qr')->name('purchase_order_good_issue_detail_detail_qr_code_');
-    Route::get('/purchase_order/good_issue/detail_print_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@print')->name('purchase_order_good_issue_detail_print_');
-    Route::get('/purchase_order/good_issue/delete_', 'PurchaseOrder\GoodIssue\GoodIssue\DetailController@delete')->name('purchase_order_good_issue_detail_delete_');
     //GI STO Dede Krisna
 
 
@@ -139,7 +138,7 @@ Route::group(['middleware' => 'check_user_session:2,3,5,6'], function () {
     Route::post('/purchase_order/good_receipt/add/save_material', 'PurchaseOrder\GoodReceipt\AddController@save_material')->name('purchase_order_good_receipt_save_material');
     Route::post('/purchase_order/good_receipt/add/delete_material', 'PurchaseOrder\GoodReceipt\AddController@delete_material')->name('purchase_order_good_receipt_delete_material');
     Route::post('/purchase_order/good_receipt/add/save', 'PurchaseOrder\GoodReceipt\AddController@save')->name('purchase_order_good_receipt_save');
-    Route::get('/good_receive/purchase_order/create_gr', 'GoodReceive\PurchaseOrder\CreateGRController@index')->name('transaction_purchase_order_create_gr');
+//    Route::get('/good_receive/purchase_order/create_gr', 'GoodReceive\PurchaseOrder\CreateGRController@index')->name('transaction_purchase_order_create_gr');
 });
 
 
@@ -154,16 +153,6 @@ Route::group(['middleware' => 'check_user_session:2,5,6'], function () {
     Route::post('/purchase_order/good_issue/add/delete_material', 'PurchaseOrder\GoodIssue\AddController@delete_material')->name('purchase_order_good_issue_delete_material');
     Route::post('/purchase_order/good_issue/add/save', 'PurchaseOrder\GoodIssue\AddController@save')->name('purchase_order_good_issue_save');
 
-    //Dede Krisna
-    Route::get('purchase_order/good_issue/add_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@index')->name('transaction_gi_sto_add_');
-    Route::get('/purchase_order/good_issue/add_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@index')->name('purchase_order_good_issue_add_');
-    Route::get('/purchase_order/good_issue/add/get_materials_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@get_materials')->name('purchase_order_good_issue_add_get_materials_');
-    Route::get('/purchase_order/good_issue/add/get_material_gr_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@get_material_gr')->name('purchase_order_good_issue_add_get_material_gr_');
-    Route::get('/purchase_order/good_issue/add/get_material_status_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@get_material_status')->name('purchase_order_good_issue_add_get_material_status_');
-    Route::post('/purchase_order/good_issue/add/save_material_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@save_material')->name('purchase_order_good_issue_save_material_');
-    Route::post('/purchase_order/good_issue/add/delete_material_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@delete_material')->name('purchase_order_good_issue_delete_material_');
-    Route::post('/purchase_order/good_issue/add/save_', 'PurchaseOrder\GoodIssue\GoodIssue\AddController@save')->name('purchase_order_good_issue_save_');
-    //Dede Krisna
 
     Route::get('/goods_movement/cancellation/get_doc_number', 'GoodsMovement\Cancellation\AddController@get_doc_number')->name('cancellation_get_doc_number');
     Route::get('/goods_movement/cancellation/get_doc_number_detail', 'GoodsMovement\Cancellation\AddController@get_doc_number_detail')->name('cancellation_get_doc_number_detail');

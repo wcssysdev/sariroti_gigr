@@ -200,11 +200,6 @@
                                         <span class="menu-text">Good Issue</span>
                                     </a>
                                 </li>
-                                <li class="menu-item {{ request()->is('purchase_order/good_issue/*') ? 'menu-item-active' : '' }}" aria-haspopup="true">
-                                    <a href="{{ route("purchase_order_good_issue_view_") }}" class="menu-link">
-                                        <span class="menu-text">Good Issue 2</span>
-                                    </a>
-                                </li>
                                 @endif
                             </ul>
                         </div>

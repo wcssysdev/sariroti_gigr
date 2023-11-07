@@ -496,7 +496,7 @@ class AddController extends Controller {
         $gr_material_arr = [];
         $count = 0;
         foreach ($gr_materials as $row) {
-//            try {
+            try {
 
 
                 $qr_code_number = session("plant") . "-" . uniqid();
@@ -575,7 +575,12 @@ class AddController extends Controller {
                 ]);
 //            var_dump($master_uom_base);echo "<br/>";
 //            var_dump([$master_material["MA_MATL_UOM"],$po_detail["TR_PO_DETAIL_UOM"]]);echo "<br/>";
-
+//if(empty($master_uom_base['MA_UOM_ID'])){
+//    dd(['base',$master_uom_base,$master_uom_comparison]);
+//}
+//if(empty($master_uom_comparison['MA_UOM_ID'])){
+//    dd(['compare',$master_uom_comparison,$po_detail["TR_PO_DETAIL_UOM"],$row["material_code"]]);
+//}
                 if (($master_uom_base["MA_UOM_ID"] == $master_uom_comparison["MA_UOM_ID"]) || (empty($master_uom_comparison['MA_UOM_NUM']) && empty($master_uom_comparison["MA_UOM_DEN"]))) {
                     $base_qty = $row["qty"];
                     $qty_left = $base_qty;
@@ -614,10 +619,10 @@ class AddController extends Controller {
                         "TR_GR_DETAIL_SAPLINE_ID" => $count
                     ]
                 ]);
-//            } catch (\Exception $e) {
-//
-//                return $e->getMessage();
-//            }
+            } catch (\Exception $e) {
+
+                return $e->getMessage();
+            }
         }
             $insert_res = std_insert([
                 "table_name" => "TR_GR_DETAIL",

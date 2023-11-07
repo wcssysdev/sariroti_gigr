@@ -55,10 +55,13 @@ class ViewController extends Controller
 
         if (!isset($request->end_date) || $request->end_date == "") {
             $request->end_date = date("Y-m-d");
+//            dd(['not']);
         }
         else{
+//            dd(['nothing']);
             $request->end_date = convert_to_y_m_d($request->end_date);
         }
+//        dd(['ok']);
 
         if (isset($request->end_date) && $request->end_date != "") {
             $conditions = array_merge($conditions, [
@@ -127,8 +130,8 @@ class ViewController extends Controller
             "where" => $conditions,
             "distinct" => true
         ]);
-
-        return view('transaction/purchase_order/good_receipt/view', [
+//dd('die');
+        $views = view('transaction/purchase_order/good_receipt/view', [
             "data" => $po_gr_data,
             "plant" => $plant_data,
             "vendor" => $vendor_data,
@@ -137,5 +140,7 @@ class ViewController extends Controller
             "plant_selected" => $request->plant_code,
             "vendor_selected" => $request->vendor_code
         ]);
+//        dd($views);
+        return $views;
     }
 }
