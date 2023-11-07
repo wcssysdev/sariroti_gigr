@@ -1,4 +1,8 @@
 
 .env
-config/database.php
+config/*.php
 database/migrations/*.php
+public/storage/
+*.properties
+vendor/
+app/Console/Kernel.php
